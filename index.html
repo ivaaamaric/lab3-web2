@@ -13,6 +13,7 @@
 
         var gamePieces = [];
         var hitPieces = 0;
+        var missPieces = 0;
 
         function startGame() {
             for (var i = 0; i < getRandomInt(10) + 10; i++) {
@@ -28,6 +29,8 @@
             myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 50);
             text = "Hit: " + hitPieces;
             myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 80);
+            text = "Miss: " + missPieces;
+            myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 110);
 
             for (var i = 0; i < gamePieces.length; i++) {
                 gamePieces[i].newPos();
@@ -53,8 +56,10 @@
                             <= Math.pow(gamePieces[i].width + threshold, 2)) {
                             gamePieces.splice(i, 1);
                             hitPieces++;
+                            return;
                         }
                     }
+                    missPieces++;
                 }
             },
             stop: function () {
