@@ -12,6 +12,7 @@
         var colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple", "black", "teal", "brown"];
 
         var gamePieces = [];
+        var generatedPieces = 0;
         var hitPieces = 0;
         var missPieces = 0;
 
@@ -19,13 +20,13 @@
             for (var i = 0; i < getRandomInt(10) + 10; i++) {
                 gamePieces[i] = new component(25, 25, colors[i % 10], getRandomInt(canvasWidth), getRandomInt(canvasHeight));
             }
-
+            generatedPieces = gamePieces.length
             myGameArea.start();
         }
 
         function updateGameArea() {
             myGameArea.clear();
-            var text = "Generated: " + gamePieces.length;
+            var text = "Generated: " + generatedPieces;
             myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 50);
             text = "Hit: " + hitPieces;
             myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 80);
