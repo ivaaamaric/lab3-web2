@@ -2,13 +2,109 @@
 <html lang="en">
 
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>HTTP5</title>
+    <script>
+        let canvasWidth = 800
+        let canvasHeight = 500
+        let minSpeed = 3
+        let maxSpeed = 5
+        let threshold = 15
+        var colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple", "black", "teal", "brown"];
+
+        var gamePieces = [];
+        var hitPieces = 0;
+
+        function startGame() {
+            for (var i = 0; i < getRandomInt(10) + 10; i++) {
+                gamePieces[i] = new component(25, 25, colors[i % 10], getRandomInt(canvasWidth), getRandomInt(canvasHeight));
+            }
+
+            myGameArea.start();
+        }
+
+        function updateGameArea() {
+            myGameArea.clear();
+            var text = "Generated: " + gamePieces.length;
+            myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 50);
+            text = "Hit: " + hitPieces;
+            myGameArea.context.fillText(text, canvasWidth - myGameArea.context.measureText(text).width - 50, 80);
+
+            for (var i = 0; i < gamePieces.length; i++) {
+                gamePieces[i].newPos();
+                gamePieces[i].update();
+            }
+        }
+
+        var myGameArea = {
+            canvas: document.createElement("canvas"), start: function () {
+                this.canvas.id = "myGameCanvas";
+                this.canvas.width = canvasWidth;
+                this.canvas.height = canvasHeight;
+                this.context = this.canvas.getContext("2d");
+                this.context.font = "20px Georgia";
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.frameNo = 0;
+                this.interval = setInterval(updateGameArea, 20);
+
+                this.canvas.onclick = (event) => {
+                    for (var i = 0; i < gamePieces.length; i++) {
+                        if (Math.pow((event.x - gamePieces[i].x), 2)
+                            + Math.pow((event.y - gamePieces[i].y), 2)
+                            <= Math.pow(gamePieces[i].width + threshold, 2)) {
+                            gamePieces.splice(i, 1);
+                            hitPieces++;
+                        }
+                    }
+                }
+            },
+            stop: function () {
+                clearInterval(this.interval);
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+
+        function component(width, height, color, x, y, type) {
+            this.type = type;
+            this.width = Math.max(width, height);
+            this.height = Math.max(width, height);
+            this.speed_x = getRandomInt(maxSpeed) * 2 - maxSpeed;
+            this.speed_y = getRandomInt(maxSpeed) * 2 - maxSpeed;
+            this.x = x;
+            this.y = y;
+            this.update = function () {
+                ctx = myGameArea.context;
+                ctx.save();
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, width, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.restore();
+            }
+            this.newPos = function () {
+                if (this.x - width <= 0)
+                    this.speed_x = getRandomInt(maxSpeed);
+                else if ((this.x + width) >= myGameArea.context.canvas.width)
+                    this.speed_x = -getRandomInt(maxSpeed);
+
+                if (this.y - width <= 0)
+                    this.speed_y = -getRandomInt(maxSpeed);
+                else if ((this.y + width) >= myGameArea.context.canvas.height)
+                    this.speed_y = getRandomInt(maxSpeed);
+
+                this.x += this.speed_x;
+                this.y -= this.speed_y;
+            }
+        }
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max) + minSpeed;
+        }
+    </script>
 </head>
 
-<body class="m-5">
-    <h1 class="text-center"> Hello !</h1>
+<body onload="startGame()">
 </body>
 
 </html>
